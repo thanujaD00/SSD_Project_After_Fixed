@@ -21,7 +21,7 @@ function ViewTutorialsAdmin() {
         // Retrieve the JWT token from localStorage
         const token = localStorage.getItem('token');
 
-        const response = await axios.get('http://localhost:8080/tutorials/allT', {
+        const response = await axios.get('/tutorials/allT', {
           headers: {
             Authorization: `Bearer ${token}`, // Add the JWT token here
           },
@@ -63,7 +63,7 @@ function ViewTutorialsAdmin() {
       const token = localStorage.getItem('token');
 
       // Send a DELETE request to remove the tutorial based on tutorialId
-      await axios.delete(`http://localhost:8080/tutorials/deleteT/${tutorialId}`, {
+      await axios.delete(`/tutorials/deleteT/${tutorialId}`, {
         headers: {
           Authorization: `Bearer ${token}`, // Add the JWT token here
         },

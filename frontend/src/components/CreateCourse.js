@@ -47,7 +47,7 @@ function CreateCourse() {
       console.log("JWT Token:", token);
 
       // Send a POST request to your server to add the course
-      await axios.post('http://localhost:8080/courses/add', courseData, {
+      await axios.post('/courses/add', courseData, {
         headers: {
           'Authorization': `Bearer ${token}`, // Add Authorization header with JWT token
         },

@@ -22,7 +22,7 @@ function ViewCoursesAdmin() {
         const token = localStorage.getItem('token');
 
         // Add authorization header with the token
-        const response = await axios.get('http://localhost:8080/courses/getCourses', {
+        const response = await axios.get('/courses/getCourses', {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
@@ -56,7 +56,7 @@ function ViewCoursesAdmin() {
       const token = localStorage.getItem('token');
 
       // Add authorization header with the token
-      await axios.delete(`http://localhost:8080/courses/delete/${courseId}`, {
+      await axios.delete(`/courses/delete/${courseId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },

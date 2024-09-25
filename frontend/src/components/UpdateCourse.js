@@ -14,7 +14,7 @@ function UpdateCourse() {
         // Retrieve the JWT token from localStorage
         const token = localStorage.getItem('token');
         
-        const response = await axios.get(`http://localhost:8080/courses/get/${courseId}`, {
+        const response = await axios.get(`/courses/get/${courseId}`, {
           headers: {
             Authorization: `Bearer ${token}`, // Set the token in the authorization header
           },
@@ -47,7 +47,7 @@ function UpdateCourse() {
       // Retrieve the JWT token from localStorage
       const token = localStorage.getItem('token');
 
-      await axios.put(`http://localhost:8080/courses/update/${courseId}`, courseData, {
+      await axios.put(`/courses/update/${courseId}`, courseData, {
         headers: {
           Authorization: `Bearer ${token}`, // Set the token in the authorization header
         },

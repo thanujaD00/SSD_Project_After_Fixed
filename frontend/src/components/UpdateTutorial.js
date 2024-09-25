@@ -15,7 +15,7 @@ function UpdateTutorial() {
         // Retrieve the JWT token from localStorage
         const token = localStorage.getItem('token');
 
-        const tutorialResponse = await axios.get(`http://localhost:8080/tutorials/getT/${tutorialId}`, {
+        const tutorialResponse = await axios.get(`/tutorials/getT/${tutorialId}`, {
           headers: {
             Authorization: `Bearer ${token}`, // Add the JWT token here
           },
@@ -50,7 +50,7 @@ function UpdateTutorial() {
       // Retrieve the JWT token from localStorage
       const token = localStorage.getItem('token');
 
-      await axios.put(`http://localhost:8080/tutorials/updateT/${tutorialId}`, tutorialData, {
+      await axios.put(`/tutorials/updateT/${tutorialId}`, tutorialData, {
         headers: {
           Authorization: `Bearer ${token}`, // Add the JWT token here
         },

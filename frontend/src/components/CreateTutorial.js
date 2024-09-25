@@ -59,7 +59,7 @@ function CreateTutorial() {
       // Retrieve the JWT token from localStorage
       const token = localStorage.getItem('token');
 
-      await axios.post('http://localhost:8080/tutorials/create', formData, {
+      await axios.post('/tutorials/create', formData, {
         headers: {
           'Content-Type': 'multipart/form-data', // Important for file uploads
           Authorization: `Bearer ${token}`, // Add the JWT token here
