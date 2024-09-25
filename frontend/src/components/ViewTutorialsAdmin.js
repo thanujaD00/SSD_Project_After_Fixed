@@ -13,6 +13,28 @@ function ViewTutorialsAdmin() {
   const { courseId, courseName } = useParams();
   const [tutorials, setTutorials] = useState([]);
   const navigate = useNavigate();
+  const [csrfToken, setCsrfToken] = useState('');
+
+  useEffect(() => {
+    // Fetch CSRF token from the server when the component is mounted
+    const fetchCsrfToken = async () => {
+      try {
+        axios.get('http://localhost:8080/csrf-token', { withCredentials: true })
+        .then(response => {
+          const csrfToken = response.data.csrfToken;
+          setCsrfToken(csrfToken)
+        })
+        .catch(error => {
+          console.error('Error fetching CSRF Token:', error.response ? error.response.data : error.message);
+        });
+      
+      } catch (error) {
+        console.error('Error fetching CSRF token:', error);
+      }
+    };
+
+    fetchCsrfToken();
+  }, []);
 
   useEffect(() => {
     // Fetch the list of tutorials from your server when the component mounts
@@ -24,7 +46,10 @@ function ViewTutorialsAdmin() {
         const response = await axios.get('/tutorials/allT', {
           headers: {
             Authorization: `Bearer ${token}`, // Add the JWT token here
+            'X-CSRF-Token': csrfToken,
           },
+          withCredentials: true,
+          
         });
 
         // Filter tutorials based on courseId
@@ -66,7 +91,10 @@ function ViewTutorialsAdmin() {
       await axios.delete(`/tutorials/deleteT/${tutorialId}`, {
         headers: {
           Authorization: `Bearer ${token}`, // Add the JWT token here
+          'X-CSRF-Token': csrfToken,
         },
+        withCredentials: true,
+        
       });
 
       // After successful deletion, update the tutorials list

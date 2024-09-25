@@ -8,6 +8,29 @@ function UpdateCourse() {
   const [courseData, setCourseData] = useState({});
   const [isUpdating, setIsUpdating] = useState(false); // State to manage the update process
 
+  const [csrfToken, setCsrfToken] = useState('');
+
+  useEffect(() => {
+    // Fetch CSRF token from the server when the component is mounted
+    const fetchCsrfToken = async () => {
+      try {
+        axios.get('http://localhost:8080/csrf-token', { withCredentials: true })
+        .then(response => {
+          const csrfToken = response.data.csrfToken;
+          setCsrfToken(csrfToken)
+        })
+        .catch(error => {
+          console.error('Error fetching CSRF Token:', error.response ? error.response.data : error.message);
+        });
+      
+      } catch (error) {
+        console.error('Error fetching CSRF token:', error);
+      }
+    };
+
+    fetchCsrfToken();
+  }, []);
+
   useEffect(() => {
     async function fetchCourseDetails() {
       try {
@@ -17,7 +40,9 @@ function UpdateCourse() {
         const response = await axios.get(`/courses/get/${courseId}`, {
           headers: {
             Authorization: `Bearer ${token}`, // Set the token in the authorization header
+            'X-CSRF-Token': csrfToken,
           },
+          withCredentials: true,
         });
 
         setCourseData({
@@ -50,7 +75,10 @@ function UpdateCourse() {
       await axios.put(`/courses/update/${courseId}`, courseData, {
         headers: {
           Authorization: `Bearer ${token}`, // Set the token in the authorization header
+          'X-CSRF-Token': csrfToken,
         },
+        withCredentials: true,
+        
       });
       navigate(`/getCourseAdmin/`);
     } catch (error) {
@@ -73,7 +101,7 @@ function UpdateCourse() {
             id="coursename"
             name="coursename"
             value={courseData.coursename}
-            onChange={handleChange}
+            onChange={(e) =>  handleChange(e)}
             className="border border-27005D rounded-lg py-2 px-3 w-full focus:outline-none focus:border-9400FF"
             required
           />
@@ -86,7 +114,7 @@ function UpdateCourse() {
             id="description"
             name="description"
             value={courseData.description}
-            onChange={handleChange}
+            onChange={(e) =>  handleChange(e)}
             className="border border-27005D rounded-lg py-2 px-3 w-full h-32 focus:outline-none focus:border-9400FF"
           />
         </div>

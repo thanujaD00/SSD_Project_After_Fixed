@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 function CreateCourse() {
   const navigate = useNavigate();
+  const [errors, setErrors] = useState({});
+ 
 
   const [courseData, setCourseData] = useState({
     courseid: '',
@@ -11,7 +13,28 @@ function CreateCourse() {
     description: '',
   });
 
-  const [errors, setErrors] = useState({});
+  const [csrfToken, setCsrfToken] = useState('');
+
+  useEffect(() => {
+    // Fetch CSRF token from the server when the component is mounted
+    const fetchCsrfToken = async () => {
+      try {
+        axios.get('http://localhost:8080/csrf-token', { withCredentials: true })
+        .then(response => {
+          const csrfToken = response.data.csrfToken;
+          setCsrfToken(csrfToken)
+        })
+        .catch(error => {
+          console.error('Error fetching CSRF Token:', error.response ? error.response.data : error.message);
+        });
+      
+      } catch (error) {
+        console.error('Error fetching CSRF token:', error);
+      }
+    };
+
+    fetchCsrfToken();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -41,20 +64,31 @@ function CreateCourse() {
       return;
     }
 
+    // console.log( 'X-CSRF-Token'+ csrfToken)
+
     try {
       // Get the JWT token from localStorage (assuming it's stored there after login)
       const token = localStorage.getItem('token');
-      console.log("JWT Token:", token);
 
-      // Send a POST request to your server to add the course
+      // Send a POST request to your server to add the course,including the CSRF token in headers
+
       await axios.post('/courses/add', courseData, {
         headers: {
           'Authorization': `Bearer ${token}`, // Add Authorization header with JWT token
+          'X-CSRF-Token': csrfToken,
         },
-      });
+        withCredentials: true, // Make sure credentials (like cookies) are sent with the request
 
-      // Redirect to a different page or display a success message
-      alert('Course added successfully!');
+      }).then(response => {
+        console.log(response)
+
+        // Redirect to admin courses page
+        navigate('/getCourseAdmin/');
+
+      }).catch(error => {
+        console.log(error)
+      })
+
       
       // Optionally reset the form
       setCourseData({
@@ -63,8 +97,6 @@ function CreateCourse() {
         description: '',
       });
 
-      // Redirect to admin courses page
-      navigate('/getCourseAdmin/');
     } catch (error) {
       // Handle errors, e.g., display an error message
       console.error('Error adding course:', error);

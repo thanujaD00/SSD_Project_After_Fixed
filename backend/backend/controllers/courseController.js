@@ -1,13 +1,16 @@
 const Course = require('../models/courseModel');
+const csrf = require('csurf');
 
-const addCourse = async (req, res) => {
+const csrfProtection = csrf({ cookie: true });
+
+const addCourse = [csrfProtection,async (req, res) => {
   try {
-    const { courseid, coursename, description, sections } = req.body;
+    const { courseid, coursename, description } = req.body;
     const newCourse = new Course({
       courseid,
       coursename,
       description,
-      sections,
+      
     });
 
     await newCourse.save();
@@ -16,7 +19,7 @@ const addCourse = async (req, res) => {
     console.log(err);
     res.status(500).json({ error: 'Error adding course' });
   }
-};
+}];
 
 const getCourses = async (req, res) => {
   try {
@@ -28,7 +31,7 @@ const getCourses = async (req, res) => {
   }
 };
 
-const updateCourse = async (req, res) => {
+const updateCourse = [csrfProtection,async (req, res) => {
   try {
     const courseid = req.params.courseid;
     const newData = req.body;
@@ -40,9 +43,9 @@ const updateCourse = async (req, res) => {
     console.log(error);
     res.status(500).json({ error: 'Error updating course' });
   }
-};
+}];
 
-const deleteCourse = async (req, res) => {
+const deleteCourse = [csrfProtection,async (req, res) => {
   try {
     const courseid = req.params.courseid;
     await Course.findByIdAndRemove(courseid);
@@ -51,7 +54,7 @@ const deleteCourse = async (req, res) => {
     console.log(error);
     res.status(500).json({ error: 'Error deleting course' });
   }
-};
+}];
 
 const getCourseById = async (req, res) => {
   try {

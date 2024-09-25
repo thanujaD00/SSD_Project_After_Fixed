@@ -14,6 +14,28 @@ function CreateTutorial() {
   const [pdfFile, setPdfFile] = useState(null); // Store the selected PDF file
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
+  const [csrfToken, setCsrfToken] = useState('');
+
+  useEffect(() => {
+    // Fetch CSRF token from the server when the component is mounted
+    const fetchCsrfToken = async () => {
+      try {
+        axios.get('http://localhost:8080/csrf-token', { withCredentials: true })
+        .then(response => {
+          const csrfToken = response.data.csrfToken;
+          setCsrfToken(csrfToken)
+        })
+        .catch(error => {
+          console.error('Error fetching CSRF Token:', error.response ? error.response.data : error.message);
+        });
+      
+      } catch (error) {
+        console.error('Error fetching CSRF token:', error);
+      }
+    };
+
+    fetchCsrfToken();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -63,7 +85,9 @@ function CreateTutorial() {
         headers: {
           'Content-Type': 'multipart/form-data', // Important for file uploads
           Authorization: `Bearer ${token}`, // Add the JWT token here
-        },
+          'X-CSRF-Token': csrfToken,
+            },
+            withCredentials: true,
       });
 
       // Redirect to the "View Tutorials" page on success
