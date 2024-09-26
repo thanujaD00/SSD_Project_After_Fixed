@@ -35,33 +35,42 @@ const register = async (req, res) => {
 };
 
 const login = async (req, res) => {
-    const { email, password } = req.body;
-
-    // Validate inputs
-    if (!email || !password) {
-        return res.status(400).json({ message: 'Email and password are required' });
-    }
-
     try {
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(400).json({ message: 'Invalid email or password' });
+        const { email, password } = req.body;
+
+        // Validate inputs
+        if (!email || !password) {
+            return res.status(400).json({ message: 'Email and password are required' });
         }
 
-        // Compare the passwords
-        const isMatch = await bcrypt.compare(password, user.password);
+        // Basic input cleaning
+        const cleanEmail = email.trim().toLowerCase();
+        const cleanPassword = password.trim();
+
+        // Find user
+        const user = await User.findOne({ email: cleanEmail });
+        if (!user) {
+            return res.status(401).json({ message: 'Invalid email or password' });
+        }
+
+        // Compare passwords
+        const isMatch = await bcrypt.compare(cleanPassword, user.password);
         if (!isMatch) {
-            return res.status(400).json({ message: 'Invalid email or password' });
+            return res.status(401).json({ message: 'Invalid email or password' });
         }
 
         // Generate a JWT token
         const token = generateToken(user);
 
+        // Get user role
         const role = user.role;
-        res.json({ token, role });
+
+        // Send response
+        res.status(200).json({ token, role });
+
     } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: 'Something went wrong' });
+        console.error('Login error:', error);
+        res.status(500).json({ message: 'An error occurred during login' });
     }
 };
 
