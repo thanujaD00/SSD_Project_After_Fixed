@@ -43,7 +43,7 @@ function ViewCoursesAdmin() {
         // Get the JWT token from localStorage
         const token = localStorage.getItem('token');
 
-        // Add authorization header with the token
+        // Add authorization header with the token,CSRF
         const response = await axios.get('/courses/getCourses', {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -80,7 +80,7 @@ function ViewCoursesAdmin() {
       // Get the JWT token from localStorage
       const token = localStorage.getItem('token');
 
-      // Add authorization header with the token
+      // Add authorization header with the token, CSRF
       await axios.delete(`/courses/delete/${courseId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,

@@ -1,4 +1,5 @@
 const express = require("express");
+const mongoSanitize = require('express-mongo-sanitize');
 const { authenticate } = require('../middleware/auth.middleware');
 const {
   addCourse,
@@ -9,6 +10,8 @@ const {
 } = require('../controllers/courseController');
 
 const router = express.Router();
+
+router.use(mongoSanitize());
 
 router.post('/add', authenticate(['admin']), addCourse);
 router.get('/getCourses', authenticate(['admin', 'user']), getCourses);
