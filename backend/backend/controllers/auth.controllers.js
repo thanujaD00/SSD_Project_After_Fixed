@@ -74,7 +74,7 @@ const login = async (req, res) => {
     }
 };
 
-//token validation
+//Generate token 
 const generateToken = (user) => {
     const payload = {
         userId: user._id,
