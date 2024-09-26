@@ -22,7 +22,7 @@ function ViewCoursesUser() {
         // Retrieve the JWT token from localStorage
         const token = localStorage.getItem('token');
 
-        const response = await axios.get('http://localhost:8080/courses/getCourses', {
+        const response = await axios.get('/courses/getCourses', {
           headers: {
             Authorization: `Bearer ${token}`, // Set the token in the authorization header
           },

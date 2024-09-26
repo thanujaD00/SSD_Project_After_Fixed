@@ -9,6 +9,8 @@ const passport = require('passport');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const path = require('path');
+const csrf = require('csurf');
+const cookieParser = require('cookie-parser');
 
 const authRoutes = require('./routes/userRoutes');
 const courseRouter = require('./routes/courses');
@@ -25,12 +27,33 @@ const PORT = process.env.PORT || 8080;
 
 // Enhanced security headers
 app.use(helmet());
+app.use(cookieParser());
+
+// CSRF protection middleware
+const csrfProtection = csrf({ cookie: true });
+
+// Apply CSRF protection to all routes except login
+app.use((req, res, next) => {
+  if (req.path.startsWith('/auth') || req.path.startsWith('/api/posts || ') || req.path.startsWith('/api/comments || ')) {
+    next();
+  } else {
+    csrfProtection(req, res, next);
+  }
+});
 
 // CORS configuration
 app.use(cors({
-  origin: process.env.ALLOWED_ORIGINS.split(','),
+  origin: process.env.ALLOWED_ORIGINS,
+  credentials: true,
   optionsSuccessStatus: 200
 }));
+
+
+// Add a route to send the CSRF token to the client
+app.get('/csrf-token', csrfProtection, (req, res) => {
+  res.json({ csrfToken: req.csrfToken() });
+});
+
 
 // Rate limiting
 const limiter = rateLimit({

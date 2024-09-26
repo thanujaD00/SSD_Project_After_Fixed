@@ -4,9 +4,33 @@ import { Link, useNavigate } from 'react-router-dom';
 import jsPdf from 'jspdf';
 import 'jspdf-autotable';
 
+
+
 export default function ViewAllUsers() {
     const navigate = useNavigate();
     const [users, setUsers] = useState([]);
+    const [csrfToken, setCsrfToken] = useState('');
+
+  useEffect(() => {
+    // Fetch CSRF token from the server when the component is mounted
+    const fetchCsrfToken = async () => {
+      try {
+        axios.get('http://localhost:8080/csrf-token', { withCredentials: true })
+        .then(response => {
+          const csrfToken = response.data.csrfToken;
+          setCsrfToken(csrfToken)
+        })
+        .catch(error => {
+          console.error('Error fetching CSRF Token:', error.response ? error.response.data : error.message);
+        });
+      
+      } catch (error) {
+        console.error('Error fetching CSRF token:', error);
+      }
+    };
+
+    fetchCsrfToken();
+  }, []);
 
     useEffect(() => {
         async function getUsers() {
@@ -16,7 +40,10 @@ export default function ViewAllUsers() {
                 const response = await axios.post('http://localhost:8080/auth/getAllUsers', {}, {
                     headers: {
                         Authorization: `Bearer ${token}`,
+                        'X-CSRF-Token': csrfToken,
                     },
+                    withCredentials: true
+                    
                 });
                 setUsers(response.data);
             } catch (error) {
@@ -86,7 +113,11 @@ export default function ViewAllUsers() {
             const response = await axios.post("http://localhost:8080/auth/deleteUser", { userId }, {
                 headers: {
                     Authorization: `Bearer ${token}`,
+                    'X-CSRF-Token': csrfToken,
                 },
+                withCredentials: true
+                
+                
             });
             alert("Success Delete User");
             window.location.reload();

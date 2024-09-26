@@ -14,6 +14,28 @@ function ViewCoursesAdmin() {
   const [searchQuery, setSearchQuery] = useState('');
 
   const navigate = useNavigate();
+  const [csrfToken, setCsrfToken] = useState('');
+
+  useEffect(() => {
+    // Fetch CSRF token from the server when the component is mounted
+    const fetchCsrfToken = async () => {
+      try {
+        axios.get('http://localhost:8080/csrf-token', { withCredentials: true })
+        .then(response => {
+          const csrfToken = response.data.csrfToken;
+          setCsrfToken(csrfToken)
+        })
+        .catch(error => {
+          console.error('Error fetching CSRF Token:', error.response ? error.response.data : error.message);
+        });
+      
+      } catch (error) {
+        console.error('Error fetching CSRF token:', error);
+      }
+    };
+
+    fetchCsrfToken();
+  }, []);
 
   useEffect(() => {
     async function fetchCourses() {
@@ -21,11 +43,14 @@ function ViewCoursesAdmin() {
         // Get the JWT token from localStorage
         const token = localStorage.getItem('token');
 
-        // Add authorization header with the token
-        const response = await axios.get('http://localhost:8080/courses/getCourses', {
+        // Add authorization header with the token,CSRF
+        const response = await axios.get('/courses/getCourses', {
           headers: {
             'Authorization': `Bearer ${token}`,
+            'X-CSRF-Token': csrfToken,
           },
+          withCredentials: true,
+          
         });
         setCourses(response.data);
       } catch (error) {
@@ -55,11 +80,13 @@ function ViewCoursesAdmin() {
       // Get the JWT token from localStorage
       const token = localStorage.getItem('token');
 
-      // Add authorization header with the token
-      await axios.delete(`http://localhost:8080/courses/delete/${courseId}`, {
+      // Add authorization header with the token, CSRF
+      await axios.delete(`/courses/delete/${courseId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
+          'X-CSRF-Token': csrfToken,
         },
+        withCredentials: true,
       });
       setCourses((prevCourses) => prevCourses.filter((course) => course._id !== courseId));
       navigate('/getCourseAdmin');
