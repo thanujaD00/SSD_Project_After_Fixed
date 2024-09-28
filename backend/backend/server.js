@@ -26,7 +26,7 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 
 // Enhanced security headers
-app.use(helmet());
+// app.use(helmet());
 app.use(cookieParser());
 
 // CSRF protection middleware
