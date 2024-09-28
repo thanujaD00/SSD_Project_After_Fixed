@@ -24,7 +24,7 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 
 // Enhanced security headers
-app.use(helmet());
+// app.use(helmet());
 
 // CORS configuration
 app.use(cors({
