@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios'; 
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import '../css/createPost.css'; 
+import '../css/createPost.css';
 import jwt from 'jwt-decode';
 
 function CreatePost() {
@@ -19,7 +19,7 @@ function CreatePost() {
       const userId = decoded.userId;
 
       try {
-        const response = await axios.post("http://localhost:8080/auth/profile", { userId }, {
+        const response = await axios.get("http://localhost:8080/auth/profile", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
