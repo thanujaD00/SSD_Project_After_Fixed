@@ -68,7 +68,7 @@ function CreatePost() {
     const token = localStorage.getItem('token'); // Get the token
 
     try {
-      const response = await axios.post('http://localhost:8080/api/posts/posts', {
+      const response = await axios.post('/api/posts/posts', {
         title,
         content,
         name,
