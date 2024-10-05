@@ -21,11 +21,11 @@ const { authenticate } = require('../middleware/auth.middleware');
 
 const router = express.Router();
 
-router.post('/posts', authenticate(['admin']), PostController.createPost);
+router.post('/posts', authenticate(['user', 'admin']), PostController.createPost);
 router.get('/posts', authenticate(['admin', 'user']), PostController.getAllPosts);
 router.get('/posts/:id', authenticate(['admin', 'user']), PostController.getPostById);
-router.put('/posts/:id', authenticate(['admin']), PostController.updatePost);
-router.delete('/posts/:id', authenticate(['admin']), PostController.deletePost);
+router.put('/posts/:id', authenticate(['admin', 'user']), PostController.updatePost);
+router.delete('/posts/:id', authenticate(['admin', 'user']), PostController.deletePost);
 
 module.exports = router;
 

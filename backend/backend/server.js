@@ -34,7 +34,7 @@ const csrfProtection = csrf({ cookie: true });
 
 // Apply CSRF protection to all routes except login
 app.use((req, res, next) => {
-  if (req.path.startsWith('/auth') || req.path.startsWith('/api/posts || ') || req.path.startsWith('/api/comments || ')) {
+  if (req.path.startsWith('/auth') || req.path.startsWith('/api/posts') || req.path.startsWith('/api/comments')) {
     next();
   } else {
     csrfProtection(req, res, next);

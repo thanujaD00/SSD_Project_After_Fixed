@@ -23,7 +23,7 @@ const router = express.Router();
 router.post('/posts/:postId/comments', authenticate(['admin', 'user']), CommentController.createComment);
 router.get('/posts/:postId/comments', authenticate(['admin', 'user']), CommentController.getCommentsForPost);
 router.get('/comments/:commentId', authenticate(['admin', 'user']), CommentController.getCommentById);
-router.put('/comments/:commentId', authenticate(['admin']), CommentController.updateComment);
-router.delete('/comments/:commentId', authenticate(['admin']), CommentController.deleteComment);
+router.put('/comments/:commentId', authenticate(['admin', 'user']), CommentController.updateComment);
+router.delete('/comments/:commentId', authenticate(['admin', 'user']), CommentController.deleteComment);
 
 module.exports = router;

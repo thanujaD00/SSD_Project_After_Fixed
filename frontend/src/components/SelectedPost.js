@@ -140,9 +140,11 @@ function SelectedPost(props) {
             const userId = decoded.userId;
 
             try {
-
-
-                const response = await axios.post("http://localhost:8080/auth/profile", { userId });
+                const response = await axios.get("http://localhost:8080/auth/profile", {
+                    headers: {
+                        Authorization: `Bearer ${token}`, // Include the authorization header
+                    }
+                });
 
                 setName(response.data.firstname + ' ' + response.data.lastname);
 
@@ -160,9 +162,16 @@ function SelectedPost(props) {
 
 
     useEffect(() => {
+        const token = localStorage.getItem('token')
 
         // Fetch the selected post's details
-        axios.get(`http://localhost:8080/api/posts/posts/${postId}`)
+        axios.get(`http://localhost:8080/api/posts/posts/${postId}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`, // Include the authorization header
+                }
+            }
+        )
             .then((response) => {
                 setPost(response.data);
             })
@@ -171,7 +180,13 @@ function SelectedPost(props) {
             });
 
         // Fetch comments related to the selected post
-        axios.get(`http://localhost:8080/api/comments/posts/${postId}/comments`)
+        axios.get(`http://localhost:8080/api/comments/posts/${postId}/comments`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`, // Include the authorization header
+                }
+            }
+        )
             .then((response) => {
                 setComments(response.data);
             })
@@ -185,11 +200,17 @@ function SelectedPost(props) {
     };
 
     const handleSubmitComment = () => {
+        const token = localStorage.getItem('token')
+
         // Send a POST request to add a new comment
         axios.post(`http://localhost:8080/api/comments/posts/${postId}/comments`, {
             postId,
             text: newComment,
             name: name,
+        }, {
+            headers: {
+                Authorization: `Bearer ${token}`, // Include the authorization header
+            },
         })
             .then((response) => {
                 // Update the comments state with the newly added comment
@@ -203,6 +224,8 @@ function SelectedPost(props) {
     };
 
     const handleDeleteComment = (commentId) => {
+        const token = localStorage.getItem('token')
+
         const commentToDelete = comments.find(comment => comment._id === commentId);
 
         // Check if the logged-in user is the author of the comment
@@ -215,7 +238,13 @@ function SelectedPost(props) {
                 setShowDeleteConfirmation(true);
 
                 // Proceed with deletion
-                axios.delete(`http://localhost:8080/api/comments/comments/${commentId}`)
+                axios.delete(`http://localhost:8080/api/comments/comments/${commentId}`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`, // Include the authorization header
+                        },
+                    }
+                )
                     .then(() => {
                         const updatedComments = comments.filter((comment) => comment._id !== commentId);
                         setComments(updatedComments);
@@ -242,10 +271,17 @@ function SelectedPost(props) {
     };
 
     const handleUpdateComment = (commentId) => {
+        const token = localStorage.getItem('token')
+
         // Send a PUT or PATCH request to update the comment
         axios.put(`http://localhost:8080/api/comments/comments/${commentId}`, {
             text: editComment.text,
-        })
+        },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`, // Include the authorization header
+                },
+            })
             .then(() => {
                 // Update the UI with the edited comment text
                 const updatedComments = comments.map((comment) => {
@@ -265,6 +301,7 @@ function SelectedPost(props) {
 
 
     const handleDeletePost = () => {
+        const token = localStorage.getItem('token')
         // Check if the logged-in user is the author of the post
         if (post.name === name) {
             // Show a confirmation dialog
@@ -274,16 +311,34 @@ function SelectedPost(props) {
                 setItemToDelete('post');
                 setShowDeleteConfirmation(true);
 
-                axios.get(`http://localhost:8080/api/comments/posts/${postId}/comments`)
+                axios.get(`http://localhost:8080/api/comments/posts/${postId}/comments`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`, // Include the authorization header
+                        },
+                    }
+                )
                     .then((response) => {
                         const commentsToDelete = response.data;
                         Promise.all(
                             commentsToDelete.map((comment) =>
-                                axios.delete(`http://localhost:8080/api/comments/comments/${comment._id}`)
+                                axios.delete(`http://localhost:8080/api/comments/comments/${comment._id}`,
+                                    {
+                                        headers: {
+                                            Authorization: `Bearer ${token}`, // Include the authorization header
+                                        },
+                                    }
+                                )
                             )
                         )
                             .then(() => {
-                                axios.delete(`http://localhost:8080/api/posts/posts/${postId}`)
+                                axios.delete(`http://localhost:8080/api/posts/posts/${postId}`,
+                                    {
+                                        headers: {
+                                            Authorization: `Bearer ${token}`, // Include the authorization header
+                                        },
+                                    }
+                                )
                                     .then(() => {
                                         navigate('/allpost');
                                     })
