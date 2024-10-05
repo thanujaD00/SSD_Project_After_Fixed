@@ -18,15 +18,13 @@ export default function Profile() {
       const userId = decoded.userId;
 
       try {
-        const response = await axios.post(
-          "http://localhost:8080/auth/profile",
-          { userId },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`, // Add the JWT token here
-            },
-          }
-        );
+        const response = await axios.get(
+          "http://localhost:8080/auth/profile", {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include the authorization header
+          },
+        });
+
 
         setFirstName(response.data.firstname);
         setLastName(response.data.lastname);
@@ -90,7 +88,7 @@ export default function Profile() {
         }
       );
       alert("Update Successful");
-      window.location.href='/UserHome';
+      window.location.href = '/UserHome';
     } catch (error) {
       alert("Update unsuccessful" + error);
       console.log(error);
@@ -172,19 +170,19 @@ export default function Profile() {
           </div>
           <div className="space-x-2">
             <center>
-            <button
-              type="submit"
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-            >
-              Update
-            </button>
-            <button
-              type="button"
-              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-              onClick={deleteProfileDetails}
-            >
-              Delete
-            </button>
+              <button
+                type="submit"
+                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              >
+                Update
+              </button>
+              <button
+                type="button"
+                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                onClick={deleteProfileDetails}
+              >
+                Delete
+              </button>
             </center>
           </div>
         </form>
